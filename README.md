@@ -2,7 +2,7 @@
 
 <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard - JavaScript Style Guide"></a>
 
-Reads multiple invoices PDFs and prints the total amount received and the total fees collected by Upwork.
+Prints the total amount received and the total fees collected by multiple Upwork invoices.
 
 Output Example
 ```
@@ -20,7 +20,7 @@ TOTAL AMOUNT: $1570.83
 SERVICE FEE + VAT: $116.42
 ```
 
-**Note:** Each invoice may take more than 10 seconds to analyze. The invoice PDF is being converted to JPG and, then interpreted by Tesseract.
+**Note:** Each invoice may take more than 10 seconds to be analyzed. The invoice PDF is being converted to JPG and, then interpreted by Tesseract.
 
 ## Dependencies
 
@@ -28,6 +28,8 @@ SERVICE FEE + VAT: $116.42
 * [node-imagemagick](https://github.com/rsms/node-imagemagick)
 
 ## Requirements
+
+Install and set binary paths in your shell.
 
 * [ImageMagick](https://imagemagick.org/)
 
