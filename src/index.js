@@ -10,7 +10,7 @@ const invoicesDirName = process.env.INVOICES_DIR
 const tmpDir = path.join(__dirname, '..', 'tmp')
 
 const invoicesDirPath = path.join(__dirname, '..', 'files', invoicesDirName)
-const tmpInvoicesDirPath = path.join(tmpDir, 'tmp', invoicesDirName);
+const tmpInvoicesDirPath = path.join(tmpDir, invoicesDirName);
 
 (async function () {
   const invoices = fs.readdirSync(invoicesDirPath)
@@ -29,22 +29,24 @@ const tmpInvoicesDirPath = path.join(tmpDir, 'tmp', invoicesDirName);
   let fee = 0
 
   for (let i = 0; i < invoices.length; i++) {
-    const invoice = await readInvoice(invoices[i])
+    const invoiceName = invoices[i]
+    const invoice = await readInvoice(invoiceName)
     if (invoice.feeInvoice) {
       fee += invoice.totalAmount
     } else {
       total += invoice.totalAmount
     }
-    console.log(`${invoice} read: $${invoice.totalAmount} ${invoice.feeInvoice ? 'Upwork Fees' : 'Received'}`)
+    console.log(`${invoiceName}(${invoice.date}) ${invoice.feeInvoice ? 'Upwork Fees' : 'Received'}: $${invoice.totalAmount.toFixed(2)} `)
   }
 
-  console.log(`Summary
-  TOTAL AMOUNT: $${total}
-  SERVICE FEE + VAT: $${fee}
+  console.log(`
+Summary (${invoicesDirName})
+TOTAL AMOUNT: $${total}
+SERVICE FEE + VAT: $${fee}
   `)
 })()
 
-async function readInvoice (invoice) {
+async function readInvoice(invoice) {
   const invoicePath = path.join(invoicesDirPath, invoice)
   const invoiceImgPath = path.join(tmpInvoicesDirPath, invoice.replace('.pdf', '.jpg'))
 
@@ -68,7 +70,7 @@ async function readInvoice (invoice) {
   }
 }
 
-function convertPDFToJPG (srcPath, dstPath) {
+function convertPDFToJPG(srcPath, dstPath) {
   return new Promise((resolve, reject) => {
     const args = ['-density', '150', '-quality', '85']
     im.convert([...args, srcPath, dstPath], (err) => {
@@ -81,7 +83,7 @@ function convertPDFToJPG (srcPath, dstPath) {
   })
 }
 
-function readImageText (imgPath) {
+function readImageText(imgPath) {
   return new Promise((resolve, reject) => {
     Tesseract.recognize(
       imgPath,
@@ -89,11 +91,11 @@ function readImageText (imgPath) {
       {
         logger: LogTesseract
           ? m => {
-              console.log(m)
-            }
+            console.log(m)
+          }
           : () => {
 
-            }
+          }
       }
     ).then(({ data: { text } }) => {
       resolve(text)
@@ -103,7 +105,7 @@ function readImageText (imgPath) {
   })
 }
 
-function extractUpworkInvoiceData (text) {
+function extractUpworkInvoiceData(text) {
   const amountRegex = /TOTAL AMOUNT:? \$(.*)/
   const totalAmountMatch = amountRegex.exec(text)
 
@@ -111,8 +113,16 @@ function extractUpworkInvoiceData (text) {
     throw new Error('Could not find TOTAL AMOUNT')
   }
 
+  const dateRegex = /DUE DATE (.*)/
+  const date = dateRegex.exec(text)
+
+  if (!date) {
+    throw new Error('Could not find DUE DATE')
+  }
+
   return {
     totalAmount: +totalAmountMatch[1].replace(',', ''),
-    feeInvoice: text.indexOf('Service Fee') >= 0
+    feeInvoice: text.indexOf('Service Fee') >= 0,
+    date: date[1]
   }
 }
