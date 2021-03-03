@@ -1,5 +1,9 @@
 # Upwork Invoices
-Reads upwork invoices and return amount received.
+
+<a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard - JavaScript Style Guide"></a>
+
+Reads multiple invoices files and prints the total amount received and the total fees collected by Upwork.
+
 
 ## Requirements
 
@@ -11,4 +15,18 @@ Reads upwork invoices and return amount received.
 
 ```
 $ npm install
+```
+
+## Usage
+
+Copy your invoices to `files/<invoices_dir_name>`.
+
+Create a `.env` file and set the directory invoices name you want get information.
+```
+INVOICES_DIR=<invoices_dir_name>
+```
+
+Run program.
+```
+npm start
 ```
