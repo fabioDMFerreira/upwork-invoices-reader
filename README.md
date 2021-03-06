@@ -43,12 +43,7 @@ $ npm install
 
 Copy your invoices to `files/<invoices_dir_name>`.
 
-Create a `.env` file and set the directory invoices name you want get information.
-```
-INVOICES_DIR=<invoices_dir_name>
-```
-
 Run program.
 ```
-npm start
+npm start -- <dir_name1> <dir_name2> ...
 ```
